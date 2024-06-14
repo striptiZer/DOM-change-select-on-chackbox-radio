@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Manager</title>
+</head>
+<body>
+    
+    <label for="twoSelect">Option to radiobutton or checkbox</label>
+    <br>
+    <select id="twoSelect" style="width: 150px;">
+        <option value="one">one</option>
+        <option value="two">two</option>
+    </select>
+    <br>
+    <button id="changeButton">Change</button>
+    <br>
+    <label for="manySelect">Option to radiobutton or checkbox</label>
+    <br>
+    <select id="manySelect" style="width: 150px;">
+        <option value="one">one</option>
+        <option value="two">two</option>
+        <option value="free">free</option>
+        <option value="four">four</option>
+    </select>
+    <br>
+    <button id="changeButton2">Change</button>
+    <br>
+    
+    <button id="changeButton" style="width: 100px; height: 25px; margin-top: 10px; margin-left: 20px;">SUBMIT</button>
+
+
+    <script>
+class OptionManager {
+    constructor(selectId, changeButtonId) {
+        this.select = document.getElementById(selectId);
+        this.options = this.select.getElementsByTagName("option");
+        this.optionValues = [];
+        this.changeButton = document.getElementById(changeButtonId);
+        
+        for (let i = 0; i < this.options.length; i++) {
+            this.optionValues.push(this.options[i].value);
+        }
+
+        this.changeButton.addEventListener('click', this.changeHandler.bind(this));
+    }
+
+    changeHandler() {
+        if (!document.getElementById('changeDiv')) {
+            this.changeDiv = document.createElement('div');
+            this.changeDiv.id = 'changeDiv';
+            this.select.insertAdjacentElement('afterend', this.changeDiv);
+        } else {
+            this.changeDiv = document.getElementById('changeDiv');
+        }
+
+        this.changeDiv.innerHTML = ''; 
+        if (this.options.length > 2) {
+            this.manySelect();
+        } else {
+            this.twoSelect();
+        }
+        this.select.remove();
+        this.changeButton.removeEventListener('click', this.changeHandler.bind(this));
+    }
+
+
+
+
+    manySelect() {
+        let selectedOptionValue = this.select.value;
+        for (let i = 0; i < this.optionValues.length; i++) {
+            let radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name= "radio";
+            radio.value = this.options[i].value;
+
+            if (radio.value === selectedOptionValue) {
+                radio.checked = true;
+            }
+
+            let label = document.createElement("label");
+            label.htmlFor = this.options[i].id;
+            label.appendChild(document.createTextNode(this.optionValues[i]));
+
+            this.changeDiv.appendChild(radio);
+            this.changeDiv.appendChild(label);
+            this.changeDiv.appendChild(document.createElement("br"));
+        }
+    }
+
+    twoSelect() {
+        let selectedOptionValue = this.select.value;
+                
+                let checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.id = "singleCheckbox";
+                checkbox.value = selectedOptionValue;
+                
+                if (selectedOptionValue) {
+                    checkbox.checked = true;
+                }
+                
+                checkbox.addEventListener('change', (event) => {
+                    if (event.target.checked) {
+                        this.select.value = checkbox.value;
+                    } else {
+                        this.select.selectedIndex = -1;  // Deselect all options
+                    }
+                });
+
+                let label = document.createElement("label");
+                label.htmlFor = "singleCheckbox";
+                label.appendChild(document.createTextNode("Select option"));
+                
+                this.changeDiv.appendChild(checkbox);
+                this.changeDiv.appendChild(label);
+            }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    new OptionManager('twoSelect', 'changeButton');
+});
+
+
+        
+
+
+
+// Arrow function to get all the GET parameters
+getParameters = () => {
+ 
+ // Address of the current window
+ address = window.location.search
+
+ // Returns a URLSearchParams object instance
+ parameterList = new URLSearchParams(address)
+
+ // Created a map which holds key value pairs
+ let map = new Map()
+
+ // Storing every key value pair in the map
+ parameterList.forEach((value, key) => {
+     map.set(key, value)
+ })
+
+ // Returning the map of GET parameters
+ return map
+}
+
+// Gets all the getParameters
+console.log(getParameters())
+
+        
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
