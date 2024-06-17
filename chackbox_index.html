@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Option Manager</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <style>
+        body{ padding: 25px 25px 25px 25px;}
+        .div { border: 2px rgb(3, 147, 3) solid; border-radius: 5px; margin-top: 15px;  width: 350px; height: 280px; padding: 15px 25px 25px 25px; }
+    </style>
+</head>
+<body>
+    <div class="div">
+        <label for="twoSelect">Option to radiobutton or checkbox</label>
+        <br>
+        <select id="twoSelect" class="form-select form-select-lg mb-3" style="width: 250px;">
+            <option value="one">one</option>
+            <option value="two">two</option>
+        </select>
+        <br>
+        <button id="changeButton" class="btn btn-success" style="margin: 15px 0px 40px 0px;">Change</button>
+    </div>
+    <div class="div">
+        <br>
+        <label for="manySelect">Option to radiobutton or checkbox</label>
+        <br>
+        <select id="manySelect" class="form-select form-select-lg mb-3" style="width: 250px;">
+            <option value="one">one</option>
+            <option value="two">two</option>
+            <option value="free">free</option>
+            <option value="four">four</option>
+        </select>
+        <br>
+        <button id="changeButton2" class="btn btn-success" style="margin: 15px 0px 40px 0px;">Change</button>
+    </div>
+    <div class="div">
+        <button id="submit" class="btn btn-success" style="margin: 15px 0px 10px 0px;">SUBMIT</button>
+        <br>
+        <textarea id="outputdata" rows="8" style="width: 295px;"></textarea>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <script>
+class OptionManager {
+    constructor(selectId, changeButtonId) {
+        this.$select = $(`#${selectId}`);
+        this.$options = this.$select.find("option");
+        this.optionValues = this.$options.map((_, option) => option.value).get();
+        this.$changeButton = $(`#${changeButtonId}`);
+
+        this.$changeButton.on('click', this.changeHandler.bind(this));
+    }
+
+    changeHandler() {
+        const changeDivId = `changeDiv-${this.$select.attr('id')}`;
+        if (!$(`#${changeDivId}`).length) {
+            this.$changeDiv = $('<div>', { id: changeDivId });
+            this.$select.after(this.$changeDiv);
+        } else {
+            this.$changeDiv = $(`#${changeDivId}`);
+        }
+
+        this.$changeDiv.empty();
+        if (this.$options.length > 2) {
+            this.manySelect();
+        } else {
+            this.twoSelect();
+        }
+        this.$select.remove();
+        this.$changeButton.off('click', this.changeHandler.bind(this));
+    }
+
+    manySelect() {
+        let selectedOptionValue = this.$select.val();
+        for (let i = 0; i < this.optionValues.length; i++) {
+            let $radio = $('<input>', {
+                type: "radio",
+                name: `radio-${this.$select.attr('id')}`,
+                value: this.$options[i].value,
+                checked: this.$options[i].value === selectedOptionValue
+            });
+
+            let $label = $('<label>', {
+                for: this.$options[i].id,
+                text: this.optionValues[i]
+            });
+
+            this.$changeDiv.append($radio).append($label).append('<br>');
+        }
+    }
+
+    twoSelect() {
+        let selectedOptionValue = this.$select.val();
+        this.$changeDiv.empty(); // Clear the div before appending new elements
+
+        // Find the selected option's text
+        let selectedOptionText = this.$options.filter((_, option) => option.value === selectedOptionValue).text();
+
+        let $checkbox = $('<input>', {
+            type: "checkbox",
+            value: selectedOptionValue,
+            checked: true,
+            id: `checkbox-selected-${this.$select.attr('id')}`
+        });
+
+        let $label = $('<label>', {
+            for: `checkbox-selected-${this.$select.attr('id')}`,
+            text: selectedOptionText
+        });
+
+        this.$changeDiv.append($checkbox).append($label).append('<br>');
+    }
+}
+
+$(document).ready(function() {
+    new OptionManager('twoSelect', 'changeButton');
+    new OptionManager('manySelect', 'changeButton2');
+});
+
+
+        // Event listener for the submit button
+        $('#submit').on('click', () => {
+            let output = '';
+
+            // Collect all select elements
+            $('select').each(function() {
+                const id = $(this).attr('id');
+                const value = $(this).val();
+                output += `Select ID: ${id}, Value: ${value}\n`;
+                console.log(`Select ID: ${id}, Value: ${value}`);
+            });
+
+            // Collect all radio button elements
+            $('input[type="radio"]:checked').each(function() {
+                const name = $(this).attr('name');
+                const value = $(this).val();
+                output += `Radio Name: ${name}, Value: ${value}\n`;
+                console.log(`Radio Name: ${name}, Value: ${value}`);
+            });
+
+            // Collect all checkbox elements
+            $('input[type="checkbox"]:checked').each(function() {
+                const id = $(this).attr('id');
+                const value = $(this).val();
+                output += `Checkbox ID: ${id}, Value: ${value}\n`;
+                console.log(`Checkbox ID: ${id}, Value: ${value}`);
+            });
+
+            // Set the output to the textarea
+            $('#outputdata').val(output);
+        });
+
+    </script>
+</body>
+</html>
